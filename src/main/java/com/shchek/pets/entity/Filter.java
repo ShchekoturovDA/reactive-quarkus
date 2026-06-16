@@ -6,16 +6,19 @@ import jakarta.persistence.*;
 import static jakarta.persistence.GenerationType.SEQUENCE;
 
 @Entity
-@Table(name = "author_filter")
-public class AuthorFilter extends PanacheEntityBase {
+@Table(name = "domen_filter")
+public class Filter extends PanacheEntityBase {
 
     @Id
     @GeneratedValue(strategy = SEQUENCE)
     public Long id;
 
-    @Column(name = "author_name")
-    String authorName;
+    @Column(name = "domen_name")
+    public String filterName;
 
     @Column(name = "is_reverse")
-    Boolean isReverse;
+    public Boolean isReverse;
+
+    @Column(name = "filter_type")
+    public String filterType;
 }

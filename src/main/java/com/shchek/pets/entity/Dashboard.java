@@ -21,18 +21,15 @@ public class Dashboard extends PanacheEntityBase {
     @ManyToMany(
             mappedBy = "dashboard"
     )
-    public Set<AuthorFilter> authorFilter;
-
-    @ManyToMany(
-            mappedBy = "dashboard"
-    )
-    public Set<DomenFilter> domenFilter;
+    @Column(name = "filter_id")
+    public Set<Filter> filter;
 
     @OneToOne(
             mappedBy = "dashboard",
             fetch = FetchType.EAGER,
             cascade = {CascadeType.ALL}
     )
+    @Column(name = "date_filter_id")
     public DateFilter dateFilter;
 
 }

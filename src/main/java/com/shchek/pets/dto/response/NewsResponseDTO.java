@@ -7,12 +7,13 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class TopTenNewsResponseDTO {
+public class NewsResponseDTO {
 
     String title;
+    String author;
     String url;
 
     public String toString() {
-        return getTitle() + ": " + getUrl() + "\n";
+        return getTitle() + ": " + getUrl() + " by " + getAuthor() + "\n";
     }
 }
