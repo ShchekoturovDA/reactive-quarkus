@@ -7,5 +7,5 @@ import org.mapstruct.Mapper;
 @Mapper(componentModel = "jakarta")
 public abstract class NewsItemDTOToTopTenResponseMapper {
 
-    public abstract NewsResponseDTO toTopTenNewsResponseDTO(NewsItemDto newsItemDto);
+    public abstract NewsResponseDTO toNewsResponseDTO(NewsItemDto newsItemDto);
 }
