@@ -12,6 +12,7 @@ public class NewsResponseDTO {
     String title;
     String author;
     String url;
+    boolean show = false;
 
     public String toString() {
         return getTitle() + ": " + getUrl() + " by " + getAuthor() + "\n";

@@ -69,11 +69,16 @@ public class DashBoardService {
     public Multi<Dashboard> getDashBoardsByName(Multi<String> names) {
         return names.onItem()
                 .transformToUniAndMerge(
-                        name ->
-                                dashBoardRepository.findByName(name).onFailure().call(throwable -> {
+                        name -> findByName(name)
+                                .onFailure().call(throwable -> {
                                     System.out.println("failed to get dashboard named: " + name);
                                     System.out.println("ERROR: " + throwable.getMessage());
                                     throw new RuntimeException(throwable);
                                 }));
+    }
+
+    @WithTransaction
+    public Uni<Dashboard> findByName(String name){
+        return dashBoardRepository.findByName(name);
     }
 }

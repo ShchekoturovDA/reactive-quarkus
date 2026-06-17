@@ -9,7 +9,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 public class DashBoardRepository implements PanacheRepository<Dashboard> {
 
     public Uni<Dashboard> findByName(String name) {
-        return find("name = ?1", name).firstResult();
+        return find("dashBoardName = ?1", name).firstResult();
     }
 
 }

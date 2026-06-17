@@ -10,6 +10,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 
+import java.time.Duration;
 import java.util.List;
 
 import static com.shchek.pets.entity.FilterType.AUTHOR;
@@ -57,15 +58,14 @@ public class HackerNewsService {
                                 dashboard ->
                                         Multi.createFrom().iterable(dashboard.filters));
 
-        return getTopTitles(depth).filter(
+        Multi<NewsResponseDTO> newsResponseDTOMulti = getTopTitles(depth);
+        newsResponseDTOMulti.subscribe().with(
                 news ->
                         filterMulti.filter(
                                         filter ->
                                                 filter.filterType.equals(AUTHOR.name())
                                                         && filter.filterName.equals(news.getAuthor()))
-                                .collect().asList()
-                                .map(List::isEmpty)
-                                .await()
-                                .indefinitely());
+                                .subscribe().with(result -> news.setShow(true)));
+        return newsResponseDTOMulti.select().where(NewsResponseDTO::isShow);
     }
 }

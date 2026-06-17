@@ -20,7 +20,9 @@ public class Dashboard extends PanacheEntityBase {
             cascade = {
                     CascadeType.PERSIST,
                     CascadeType.MERGE
-            })
+            },
+            fetch = FetchType.EAGER
+    )
     @JoinTable(name = "filter_table_news_dashboard",
             joinColumns = @JoinColumn(name = "dashboard_id"),
             inverseJoinColumns = @JoinColumn(name = "filter_id")
