@@ -9,5 +9,5 @@ public class FilterDTO {
 
     Boolean isReverse;
 
-    String fileType;
+    String filterType;
 }

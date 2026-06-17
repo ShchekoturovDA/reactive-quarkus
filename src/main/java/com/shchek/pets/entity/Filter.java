@@ -3,17 +3,17 @@ package com.shchek.pets.entity;
 import io.quarkus.hibernate.reactive.panache.PanacheEntityBase;
 import jakarta.persistence.*;
 
-import static jakarta.persistence.GenerationType.SEQUENCE;
+import java.util.List;
 
 @Entity
-@Table(name = "domen_filter")
+@Table(name = "filter_table")
 public class Filter extends PanacheEntityBase {
 
     @Id
-    @GeneratedValue(strategy = SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long id;
 
-    @Column(name = "domen_name")
+    @Column(name = "name_to_filter")
     public String filterName;
 
     @Column(name = "is_reverse")
@@ -21,4 +21,7 @@ public class Filter extends PanacheEntityBase {
 
     @Column(name = "filter_type")
     public String filterType;
+
+    @ManyToMany(mappedBy = "filters")
+    public List<Dashboard> dashboards;
 }

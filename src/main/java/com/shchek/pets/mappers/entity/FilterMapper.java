@@ -2,11 +2,16 @@ package com.shchek.pets.mappers.entity;
 
 import com.shchek.pets.dto.request.FilterDTO;
 import com.shchek.pets.entity.Filter;
-import io.smallrye.mutiny.Uni;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+
+import java.util.List;
 
 @Mapper(componentModel = "jakarta")
 public abstract class FilterMapper {
 
-    public abstract Uni<Filter> toFilter(FilterDTO filterDTO);
+    @Mapping(target = "dashboards", expression = "java(new ArrayList())")
+    public abstract Filter toFilter(FilterDTO filterDTO);
+
+    public abstract List<Filter> toFilters(List<FilterDTO> filterDTOList);
 }

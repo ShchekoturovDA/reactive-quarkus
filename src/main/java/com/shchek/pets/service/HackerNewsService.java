@@ -44,24 +44,25 @@ public class HackerNewsService {
                         news -> newsItemDTOToTopTenResponseMapper.toNewsResponseDTO(news));
     }
 
-    public Multi<NewsResponseDTO> getTopTitlesByDashboards(Uni<List<String>> dashboardsNames, Long depth) {
+    public Multi<NewsResponseDTO> getTopTitlesByDashboards(List<String> dashboardsNames, Long depth) {
         Multi<Filter> filterMulti =
                 dashBoardService.getDashBoardsByName(
-                                dashboardsNames.onItem()
+                                Uni.createFrom()
+                                        .item(dashboardsNames).onItem()
                                         .transformToMulti(
                                                 names ->
                                                         Multi.createFrom().iterable(names))
                         ).onItem()
                         .transformToMultiAndMerge(
                                 dashboard ->
-                                        Multi.createFrom().iterable(dashboard.filter));
+                                        Multi.createFrom().iterable(dashboard.filters));
 
         return getTopTitles(depth).filter(
                 news ->
                         filterMulti.filter(
                                         filter ->
                                                 filter.filterType.equals(AUTHOR.name())
-                                                && filter.filterName.equals(news.getAuthor()))
+                                                        && filter.filterName.equals(news.getAuthor()))
                                 .collect().asList()
                                 .map(List::isEmpty)
                                 .await()

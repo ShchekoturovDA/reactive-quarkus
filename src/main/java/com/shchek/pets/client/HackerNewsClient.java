@@ -1,8 +1,6 @@
 package com.shchek.pets.client;
 
 import com.shchek.pets.dto.client.NewsItemDto;
-import io.quarkus.rest.client.reactive.ClientFormParam;
-import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;

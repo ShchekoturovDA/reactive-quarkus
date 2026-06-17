@@ -8,7 +8,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 @ApplicationScoped
 public class FilterRepository implements PanacheRepository<Filter> {
 
-    public Uni<Filter> findByFilter(Filter filter){
+    public Uni<Filter> findByFilter(Filter filter) {
         return find(
                 "filterName = ?1 and isReverse = ?2 and filterType = ?3",
                 filter.filterName, filter.isReverse, filter.filterType).firstResult();

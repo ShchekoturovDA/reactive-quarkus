@@ -9,7 +9,7 @@ import java.util.List;
 public class CreateDashBoardRequest {
 
     @NotNull
-    String name;
+    String dashBoardName;
 
     List<FilterDTO> filters;
 

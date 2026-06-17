@@ -3,33 +3,31 @@ package com.shchek.pets.entity;
 import io.quarkus.hibernate.reactive.panache.PanacheEntityBase;
 import jakarta.persistence.*;
 
-import java.util.Set;
-
-import static jakarta.persistence.GenerationType.SEQUENCE;
+import java.util.List;
 
 @Entity
 @Table(name = "news_dashboard")
 public class Dashboard extends PanacheEntityBase {
 
     @Id
-    @GeneratedValue(strategy = SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long id;
 
     @Column(name = "dashboard_name")
     public String dashBoardName;
 
     @ManyToMany(
-            mappedBy = "dashboard"
+            cascade = {
+                    CascadeType.PERSIST,
+                    CascadeType.MERGE
+            })
+    @JoinTable(name = "filter_table_news_dashboard",
+            joinColumns = @JoinColumn(name = "dashboard_id"),
+            inverseJoinColumns = @JoinColumn(name = "filter_id")
     )
-    @Column(name = "filter_id")
-    public Set<Filter> filter;
+    public List<Filter> filters;
 
-    @OneToOne(
-            mappedBy = "dashboard",
-            fetch = FetchType.EAGER,
-            cascade = {CascadeType.ALL}
-    )
-    @Column(name = "date_filter_id")
-    public DateFilter dateFilter;
+    public Long dateFrom;
 
+    public Long dateEnd;
 }
