@@ -2,15 +2,16 @@ package com.shchek.pets.service;
 
 import com.shchek.pets.dto.request.CreateDashBoardRequest;
 import com.shchek.pets.entity.Dashboard;
+import com.shchek.pets.entity.Filter;
 import com.shchek.pets.mappers.entity.DashboarMapper;
-import com.shchek.pets.mappers.entity.FilterMapper;
 import com.shchek.pets.repository.DashBoardRepository;
 import com.shchek.pets.repository.FilterRepository;
-import io.quarkus.hibernate.reactive.panache.common.WithTransaction;
 import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+
+import java.util.List;
 
 @ApplicationScoped
 public class DashBoardService {
@@ -22,12 +23,9 @@ public class DashBoardService {
     FilterRepository filterRepository;
 
     @Inject
-    FilterMapper filterMapper;
-
-    @Inject
     DashboarMapper dashboarMapper;
 
-    public Uni<Long> createDashBoard(CreateDashBoardRequest createDashBoardRequest) {
+    public Uni<String> createDashBoard(CreateDashBoardRequest createDashBoardRequest) {
         Uni<CreateDashBoardRequest> createDashBoardRequestUni = Uni.createFrom().item(createDashBoardRequest);
         Uni<Dashboard> dashboardUni =
                 createDashBoardRequestUni.onItem()
@@ -35,35 +33,38 @@ public class DashBoardService {
                                 request ->
                                         Uni.createFrom().item(dashboarMapper.toDashboard(request)));
 
-        dashboardUni
+        Uni<List<Filter>> filters = dashboardUni
                 .onItem()
-                .transformToMulti(
-                        dasboard ->
-                                Multi.createFrom().iterable(dasboard.filters))
-                .onItem()
-                .transformToUniAndConcatenate(
-                        filter ->
-                                filterRepository.findByFilter(filter))
-                .onItem()
-                .transform(
-                        filter ->
-                                dashboardUni.map(
-                                        dashboard -> {
-                                            filter.dashboards.add(dashboard);
-                                            dashboard.filters.add(filter);
-                                            return dashboard;
-                                        }));
-
-        return dashboardUni
-                .onItem().call(
-                        dashboard ->
-                                saveDashBoard(dashboard)).map(savedDashboard -> savedDashboard.id);
-
+                .transformToMulti(dashboard ->
+                        Multi.createFrom().iterable(dashboard.filters)
+                                .onItem()
+                                .transformToUniAndMerge(filter ->
+                                        filterRepository.findByFilter(filter)
+                                                .onItem()
+                                                .ifNull()
+                                                .continueWith(filter)
+                                                .onItem()
+                                                .transform(resolvedFilter -> {
+                                                    resolvedFilter.dashboards.add(dashboard);
+                                                    return resolvedFilter;
+                                                })
+                                )
+                ).collect()
+                .asList();
+        return filters.onItem()
+                .transformToUni(
+                        list ->
+                                dashboardUni.call(
+                                                dashboard -> {
+                                                    dashboard.filters = list;
+                                                    return saveDashBoard(dashboard);
+                                                })
+                                        .map(savedDashboard -> savedDashboard.dashBoardName)
+                );
     }
 
-    @WithTransaction
     Uni<Dashboard> saveDashBoard(Dashboard dashboard) {
-        return dashBoardRepository.persist(dashboard);
+        return dashBoardRepository.merge(dashboard);
     }
 
     public Multi<Dashboard> getDashBoardsByName(Multi<String> names) {
@@ -77,8 +78,7 @@ public class DashBoardService {
                                 }));
     }
 
-    @WithTransaction
-    public Uni<Dashboard> findByName(String name){
+    public Uni<Dashboard> findByName(String name) {
         return dashBoardRepository.findByName(name);
     }
 }

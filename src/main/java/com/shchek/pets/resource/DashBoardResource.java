@@ -15,7 +15,7 @@ public class DashBoardResource {
 
     @POST
     @Path("/create")
-    public Uni<Long> createDashBoard(CreateDashBoardRequest createDashBoardRequestUni) {
+    public Uni<String> createDashBoard(CreateDashBoardRequest createDashBoardRequestUni) {
         return dashBoardService.createDashBoard(createDashBoardRequestUni);
     }
 
