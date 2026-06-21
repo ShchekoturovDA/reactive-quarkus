@@ -13,7 +13,8 @@ public class Dashboard extends PanacheEntityBase {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long id;
 
-    @Column(name = "dashboard_name")
+    @Column(name = "dashboard_name",
+            unique = true)
     public String dashBoardName;
 
     @ManyToMany(
